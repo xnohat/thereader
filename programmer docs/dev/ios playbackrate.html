@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta content="IE=edge" http-equiv="X-UA-Compatible">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<title>XNOHAT Text to Speech by Google</title>
+<meta name="description" content="Đọc bất kỳ văn bản tiếng Việt nào, một cách trơn tru bằng công nghệ Text to Speech của Google, api hacked by xnohat">
+<meta property="og:title" content="XNOHAT Text to Speech by Google"/>
+<meta property="og:image" content="http://www.techsignin.com/wp-content/uploads/2017/01/google-translate-logo.png"/>
+<meta property="og:site_name" content="XNOHAT TTS by Google"/>
+<meta property="og:description" content="Đọc bất kỳ văn bản tiếng Việt nào, một cách trơn tru bằng công nghệ Text to Speech của Google, api hacked by xnohat"/>
+
+	<style type="text/css">
+        /* Desktop screen */
+        @media all and (min-width: 901px) {
+            .editor {
+                width: 45%;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            #ta{
+                width: 100%;
+            }
+            #btnread{
+                width: 100%;
+            }
+        }
+
+        /* tablet screen */
+        @media all and (max-width: 900px) and (min-width: 767px) {
+            .editor {
+                width: 45%;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            #ta{
+                width: 100%;
+            }
+            #btnread{
+                width: 100%;
+            }
+        }
+
+        /* mobile screen */
+        @media all and (max-width: 766px) {
+            #ta{
+                width: 100%;
+            }
+
+            #btnread{
+                width: 100%;
+            }
+        }
+	</style>
+    <script src="jquery-3.1.1.min.js"></script>
+</head>
+<body>
+
+<!-- <video controls id="videoTag" width="640" height="360" preload="none">
+<source src="03.mp4" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"' id="mp4Source">
+</video> -->
+
+<audio controls src="" id="videoTag"></audio>
+
+<div id="change">change rate to x2</div>
+<div id="change2">change rate to x0.5</div>
+<script type="text/javascript">
+var audio = document.getElementById('videoTag');
+
+$('#videoTag').attr('src','translate_tts.mp3').get(0).play()
+
+audio.addEventListener('canplay',function(){
+	document.getElementById('change').addEventListener('click',function(){
+	    audio.pause();
+	    audio.playbackRate = 2.0;
+	    audio.play();
+	},false);
+	document.getElementById('change2').addEventListener('click',function(){
+	    audio.pause();
+	    audio.playbackRate = 0.5;
+	    audio.play();
+	},false);
+},false);
+</script>
+
+</body>
+</html>

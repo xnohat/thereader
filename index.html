@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta content="IE=edge" http-equiv="X-UA-Compatible">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<title>XNOHAT Text to Speech by Google</title>
+<meta name="description" content="Đọc bất kỳ văn bản tiếng Việt nào, một cách trơn tru bằng công nghệ Text to Speech của Google, api hacked by xnohat">
+<meta property="og:title" content="XNOHAT Text to Speech by Google"/>
+<meta property="og:image" content="http://www.techsignin.com/wp-content/uploads/2017/01/google-translate-logo.png"/>
+<meta property="og:site_name" content="XNOHAT TTS by Google"/>
+<meta property="og:description" content="Đọc bất kỳ văn bản tiếng Việt nào, một cách trơn tru bằng công nghệ Text to Speech của Google, api hacked by xnohat"/>
+
+	<style type="text/css">
+        /* Desktop screen */
+        @media all and (min-width: 901px) {
+            .editor {
+                width: 45%;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            #ta{
+                width: 100%;
+            }
+            #btnread{
+                width: 100%;
+            }
+        }
+
+        /* tablet screen */
+        @media all and (max-width: 900px) and (min-width: 767px) {
+            .editor {
+                width: 45%;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            #ta{
+                width: 100%;
+            }
+            #btnread{
+                width: 100%;
+            }
+        }
+
+        /* mobile screen */
+        @media all and (max-width: 766px) {
+            #ta{
+                width: 100%;
+            }
+
+            #btnread{
+                width: 100%;
+            }
+        }
+	</style>
+    <script src="jquery-3.1.1.min.js"></script>
+</head>
+<body>
+
+<div class="editor">
+    <center>
+	<textarea id="ta" rows="20" spellcheck="false" placeholder="Copy & Paste nội dung cần đọc vào đây, rồi bấm nút Read, bạn có thể bấm Play hay Pause để tạm ngưng đọc, nhưng đừng bấm lại nút Read nếu không sẽ đọc lại từ đầu. Copy & Paste your content to here and press button Read."></textarea>
+	<p id="ta-log"></p>
+    <p>
+        <select id="lang">
+               <option value="vi">Vietnamese</option>
+               <option value="En-gb">English</option>
+        </select>
+    </p>
+    <div id="speedcontrol">
+        <p>
+            <p>Reading speed: <b><span id="selectedspeed">1.3</span>x</b></p>
+            <input type="range" id="speed" value="1.3" min="1" max="2" step="0.1" oninput="getspeed()" onchange="getspeed()">
+        </p>
+    </div>
+    <input id="btnread" type="button" value="Read" onclick="googletts()" />
+    <p><audio autoplay controls src="" id="reader" hidden></audio></p>
+    </center>
+</div>
+
+<script type="text/javascript">
+
+    //Safari detect
+    var isSafari;
+    if (navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1) { isSafari = true } else { isSafari = false };
+
+    //Disable speed control on Safari
+    /*if (isSafari == true) {
+        $('#speedcontrol').hide();
+    }*/
+
+    //Disable zoom in iOS 10
+    document.documentElement.addEventListener('touchstart', function (event) 
+    {
+      if (event.touches.length > 1) 
+      {
+        event.preventDefault();
+      }
+    }, true);
+</script>
+
+<script type="text/javascript">
+
+var current_play = 0; //Global Variable - cursor of current play file
+
+function googletts(text){
+    
+    //remove any existed event listener
+    document.getElementById('reader').removeEventListener('ended', readnext);
+    current_play = 0
+
+    //Get Text
+    var text = $('#ta').val(); // Global variable - text
+    
+    if(text.length <= 200){
+
+        read(text);
+        $('#reader').show();
+
+    }else{
+
+        arr_text = stringsplitter(text);
+        console.log(arr_text);
+
+        read(arr_text[current_play]); // play 1st string
+        console.log('reading: ' + arr_text[current_play]);
+        $('#reader').show();
+        
+        document.getElementById('reader').addEventListener('ended', function(){
+            readnext(arr_text);
+        });
+
+    }
+
+    
+
+}//end function
+
+
+function readnext(arr_text) {
+    current_play++;
+    if(current_play < arr_text.length){
+        read(arr_text[current_play]);
+        console.log('reading: ' + arr_text[current_play]);
+    }else{
+        current_play = 0;
+    }
+}
+
+function read(text){
+    googlettsurl = 'tts.php?safari='+ isSafari +'&lang='+ document.getElementById("lang").value + '&speed=' + document.getElementById("speed").value + '&q='+ encodeURIComponent(text.trim());
+    $('#reader').attr('src',googlettsurl).get(0).play();
+    if (isSafari == false) { // Not Safari
+        document.getElementById('reader').playbackRate = document.getElementById("speed").value;
+        document.getElementById('reader').defaultPlaybackRate = document.getElementById("speed").value;
+    }
+}
+
+function getspeed(){
+    var x = document.getElementById("speed").value;
+    document.getElementById("selectedspeed").innerHTML = x;
+    /*if (isSafari == false) { // Not Safari
+        document.getElementById('reader').playbackRate = document.getElementById("speed").value;
+        document.getElementById('reader').defaultPlaybackRate = document.getElementById("speed").value;
+    }*/
+}
+
+/*
+Split string to part of 200 character,
+and especially not cut string at middle of word
+Return array of string part
+*/
+function stringsplitter(text){
+
+    // i will be cusor
+    var arr_text_part = new Array();
+    var x = 0; //counter for arr_text_part
+    var tempstr = '';
+
+    var i=0;
+    while(i < text.length) {
+
+       tempstr += text[i];
+       if((i >= 200) && ((i%200) === 0)){
+
+        //Trim text part to avoid middle of word break or break in middle of phrase - this so excited and intelligent
+
+        if(tempstr.indexOf("\n") != -1){ // text part have newline in string
+            //cut last character until last character is newline
+            while(text[i] != "\n"){
+               tempstr = tempstr.slice(0, -1);
+               i--;
+            }
+        
+        }else if(tempstr.indexOf('.') != -1){ // text part have . (dot) in string
+            //cut last character until last character is dot
+            while(text[i] != '.'){
+               tempstr = tempstr.slice(0, -1);
+               i--;
+            }
+        
+        }else if(tempstr.indexOf(',') != -1){
+            //cut last character until last character is comma
+            while(text[i] != ','){
+               tempstr = tempstr.slice(0, -1);
+               i--;
+            }
+        }else{
+            //cut last character until last character is space
+            while(text[i] != ' '){
+               tempstr = tempstr.slice(0, -1);
+               i--;
+            }
+        }
+
+        text = text.substring(i, text.length); //remove assigned part from string
+        i = 0; //reset cursor to 0
+
+        //console.log(tempstr);
+        arr_text_part[x] = tempstr.trim(); //save this part (remove space before and after)
+        tempstr = ''; //clear tempstr
+        x++; //increase arr_text_part counter
+
+       }
+    
+    i++
+    }//end while
+    arr_text_part[x] = text.trim(); // last part remain of text
+    
+    //console.log(arr_text_part);
+
+    return arr_text_part;
+
+}
+
+</script>
+</body>
+</html>
