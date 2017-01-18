@@ -1,46 +1,20 @@
 <?php
-set_time_limit(30);
 
-$url = 'http://translate.google.com/translate_tts?ie=UTF-8&q='. urlencode($_GET['q']) .'&tl='. $_GET['lang'] .'&total=1&idx=0&textlen=1000&client=tw-ob';//&ttsspeed=1';
+$mecuryapiurl = 'https://mercury.postlight.com/parser?url='.$_GET['u'];
 
-$file = tempnam_sfx(sys_get_temp_dir(), '.mp3');
-$fileconverted = tempnam_sfx(sys_get_temp_dir(), '.mp3');
+$response = curl_get($mecuryapiurl);
 
-$response = curl_get($url);
-
-file_put_contents($file, $response);
-
-//transform speed
-if($_GET['safari'] == 'true'){ //isSafari
-  if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-    //windows
-    exec('ffmpeg.exe -y -loglevel quiet -i '. $file .' -filter:a "atempo='. $_GET['speed'] .'" '. $fileconverted);
-  } else {
-    //linux
-    exec('./ffmpeg -y -loglevel quiet -i '. $file .' -filter:a "atempo='. $_GET['speed'] .'" '. $fileconverted);
-  }
-}else{
-  $fileconverted = $file;
-}
-
-header('Content-Description: File Transfer');
-header('Content-Type: application/octet-stream');
-header('Content-Disposition: attachment; filename='.basename($fileconverted));
-header('Content-Transfer-Encoding: binary');
-header('Expires: 0');
-header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-header('Pragma: public');
-header('Content-Length: ' . filesize($fileconverted));
-ob_clean();
-flush();
-readfile($fileconverted);
-unlink($file);
-unlink($fileconverted);
-exit;
+echo $response;
 
 function curl_get($url) {
 
         $ch = curl_init();
+
+        $headers = array(
+		    'Content-Type: application/json', 
+		    'x-api-key: 0LodF6lth6xSBhQS9yplfJyPmuaZBmlp28a4XD4d',
+		);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
         // set URL and other appropriate options
         curl_setopt($ch, CURLOPT_URL, $url); // use Random to generate unique URL every connect
@@ -72,19 +46,5 @@ function curl_get($url) {
         //return (string) $body;
         return $response;
 }
-
-function tempnam_sfx($path, $suffix) 
-   { 
-      do 
-      { 
-         $file = $path."/".mt_rand().$suffix; 
-         $fp = @fopen($file, 'x'); 
-      } 
-      while(!$fp); 
-
-      fclose($fp); 
-      return $file; 
-   }
-
 
 ?>
