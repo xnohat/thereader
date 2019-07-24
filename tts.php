@@ -1,15 +1,22 @@
 <?php
 set_time_limit(30);
 
-$url = 'http://translate.google.com/translate_tts?ie=UTF-8&q='. urlencode($_GET['q']) .'&tl='. $_GET['lang'] .'&total=1&idx=0&textlen=1000&client=tw-ob';//&ttsspeed=1';
+for ($i=0; $i < 3; $i++) { 
 
-$file = sys_get_temp_dir() . '/' . $_COOKIE['uuid'] . '.mp3';
-$fileconverted = sys_get_temp_dir() . '/' . $_COOKIE['uuid'] . '_converted.mp3';
+  $url = 'http://translate.google.com/translate_tts?ie=UTF-8&q='. urlencode($_GET['q']) .'&tl='. $_GET['lang'] .'&total=1&idx=0&textlen=1000&client=tw-ob';//&ttsspeed=1';
 
-$response = curl_get($url);
+  $file = sys_get_temp_dir() . '/' . $_COOKIE['uuid'] . '.mp3';
+  $fileconverted = sys_get_temp_dir() . '/' . $_COOKIE['uuid'] . '_converted.mp3';
 
-file_put_contents($file, $response);
+  $response = curl_get($url);
 
+  file_put_contents($file, $response);
+
+  if (filesize($file) > 500) { // if file size not too small Break loop and do next thing, or continue loop for retry
+      break;
+  }
+ 
+}
 //transform speed
 if($_GET['safari'] == 'true'){ //isSafari
   if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
