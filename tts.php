@@ -3,8 +3,8 @@ set_time_limit(30);
 
 $url = 'http://translate.google.com/translate_tts?ie=UTF-8&q='. urlencode($_GET['q']) .'&tl='. $_GET['lang'] .'&total=1&idx=0&textlen=1000&client=tw-ob';//&ttsspeed=1';
 
-$file = tempnam_sfx(sys_get_temp_dir(), '.mp3');
-$fileconverted = tempnam_sfx(sys_get_temp_dir(), '.mp3');
+$file = sys_get_temp_dir() . '/' . $_COOKIE['uuid'] . '.mp3';
+$fileconverted = sys_get_temp_dir() . '/' . $_COOKIE['uuid'] . '_converted.mp3';
 
 $response = curl_get($url);
 
@@ -34,8 +34,8 @@ header('Content-Length: ' . filesize($fileconverted));
 ob_clean();
 flush();
 readfile($fileconverted);
-unlink($file);
-unlink($fileconverted);
+@unlink($file);
+@unlink($fileconverted);
 exit;
 
 function curl_get($url) {
@@ -72,19 +72,5 @@ function curl_get($url) {
         //return (string) $body;
         return $response;
 }
-
-function tempnam_sfx($path, $suffix) 
-   { 
-      do 
-      { 
-         $file = $path."/".mt_rand().$suffix; 
-         $fp = @fopen($file, 'x'); 
-      } 
-      while(!$fp); 
-
-      fclose($fp); 
-      return $file; 
-   }
-
 
 ?>

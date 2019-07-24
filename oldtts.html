@@ -5,12 +5,12 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <meta content="IE=edge" http-equiv="X-UA-Compatible">
 <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-<title>TheReader - Book Text to Speech by Google</title>
+<title>XNOHAT Text to Speech by Google</title>
 <meta name="description" content="Đọc bất kỳ văn bản tiếng Việt nào, một cách trơn tru bằng công nghệ Text to Speech của Google, api hacked by xnohat">
-<meta property="og:title" content="TheReader - Book Text to Speech by Google" />
-<meta property="og:image" content="http://www.techsignin.com/wp-content/uploads/2017/01/google-translate-logo.png" />
-<meta property="og:site_name" content="TheReader - Book Text to Speech by Google" />
-<meta property="og:description" content="Đọc bất kỳ văn bản tiếng Việt nào, một cách trơn tru bằng công nghệ Text to Speech của Google, api hacked by xnohat" />
+<meta property="og:title" content="XNOHAT Text to Speech by Google"/>
+<meta property="og:image" content="http://www.techsignin.com/wp-content/uploads/2017/01/google-translate-logo.png"/>
+<meta property="og:site_name" content="XNOHAT TTS by Google"/>
+<meta property="og:description" content="Đọc bất kỳ văn bản tiếng Việt nào, một cách trơn tru bằng công nghệ Text to Speech của Google, api hacked by xnohat"/>
 
 	<style type="text/css">
         /* Desktop screen */
@@ -65,24 +65,13 @@
         }
 	</style>
     <script src="jquery-3.1.1.min.js"></script>
-    <script src="fingerprint2.min.js"></script>
 </head>
 <body>
 
 <div class="editor">
     <center>
     <p>
-    <form id="form" action="uploadbook.php" method="post" enctype="multipart/form-data">
-        <label for="filebook">Upload Book (PDF,EPUB)</label>
-        <input id="filebook" type="file" accept=".pdf,.epub" name="book" />
-        <input class="btn btn-success" type="button" value="Upload" onclick="douploadbook()"/>
-    </form>
-    </p>
-    <P id='uploadstatus'></P>
-    <p>
-        <label for="currentpage">Get text from page: </label>
-        <input id="currentpage" type="text" size=3 />
-        <input id="btngettext" type="button" value="Get Text" onclick="gettextfrompage()" />
+    	<input type="text" id="url" name="url" placeholder="http:// paste url của bài báo cần đọc vào đây rồi bấm Get Content"><input type="button" id="btnurl" name="btnurl" value="Get Content" onclick="getcontent()">
     </p>
 	<textarea id="ta" rows="20" spellcheck="false" placeholder="Copy & Paste nội dung cần đọc vào đây, rồi bấm nút Read, bạn có thể bấm Play hay Pause để tạm ngưng đọc, nhưng đừng bấm lại nút Read nếu không sẽ đọc lại từ đầu. Copy & Paste your content to here and press button Read."></textarea>
 	<p id="ta-log"></p>
@@ -94,8 +83,8 @@
     </p>
     <div id="speedcontrol">
         <p>
-            <p>Reading speed: <b><span id="selectedspeed">1.2</span>x</b></p>
-            <input type="range" id="speed" value="1.2" min="1" max="2" step="0.1" oninput="getspeed()" onchange="getspeed()">
+            <p>Reading speed: <b><span id="selectedspeed">1.3</span>x</b></p>
+            <input type="range" id="speed" value="1.3" min="1" max="2" step="0.1" oninput="getspeed()" onchange="getspeed()">
         </p>
     </div>
     <input id="btnread" type="button" value="Read" onclick="googletts()" />
@@ -104,8 +93,6 @@
 </div>
 
 <script type="text/javascript">
-
-
 
     //Safari detect
     var isSafari;
@@ -124,39 +111,6 @@
         event.preventDefault();
       }
     }, true);
-
-    String.prototype.hashCode = function () {
-        var hash = 0;
-        if (this.length == 0) {
-            return hash;
-        }
-        for (var i = 0; i < this.length; i++) {
-            var char = this.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash; // Convert to 32bit integer
-        }
-        return hash;
-    }
-
-    //UUID Generate from FingerPrint
-    if (window.requestIdleCallback) {
-        requestIdleCallback(function () {
-            Fingerprint2.get(function (components) {
-                //console.log(components) // an array of components: {key: ..., value: ...}
-                //console.log(Fingerprint2.x64hash128(components.map(function (pair) { return pair.value }).join(), 31));
-                if(getCookie("uuid") === null) setCookie('uuid', Fingerprint2.x64hash128(components.map(function (pair) { return pair.value }).join(), 31),365);
-            })
-        })
-    } else {
-        setTimeout(function () {
-            Fingerprint2.get(function (components) {
-                //console.log(components) // an array of components: {key: ..., value: ...}
-                //console.log(Fingerprint2.x64hash128(components.map(function (pair) { return pair.value }).join(), 31));
-                if (getCookie("uuid") === null) setCookie('uuid', Fingerprint2.x64hash128(components.map(function (pair) { return pair.value }).join(), 31), 365);
-            })
-        }, 500)
-    }
-
 </script>
 
 <script type="text/javascript">
@@ -189,7 +143,7 @@ function googletts(){
 
     }else{
 
-        arr_text = splitcontent(text);
+        arr_text = stringsplitter(text);
         console.log(arr_text);
 
         read(arr_text[current_play]); // play 1st string
@@ -213,23 +167,7 @@ function readnext(arr_text) {
         read(arr_text[current_play]);
         console.log('reading: ' + arr_text[current_play]);
     }else{
-        // Finish reading current page !
-        current_play = 0; // reset cursor
-        var originalhashcontent = document.getElementById('ta').value.hashCode();
-        getnextpage(); // get next page content
-        
-        //loop every second to check new page content loaded ?
-        var intervalCheckHash = setInterval(() => {
-            console.log('originhash: '+originalhashcontent+' - currhash: '+ document.getElementById('ta').value.hashCode());
-            if(originalhashcontent != document.getElementById('ta').value.hashCode()){ //new content loaded 
-                googletts(); //read it !
-                clearInterval(intervalCheckHash); //clear interval
-                intervalCheckHash = 0; //destroy variable
-            }
-        }, 100);
-
-        //setTimeout(function () {  googletts(); }, 3000);
-        
+        current_play = 0;
     }
 }
 
@@ -240,7 +178,6 @@ function read(text){
         document.getElementById('reader').playbackRate = document.getElementById("speed").value;
         document.getElementById('reader').defaultPlaybackRate = document.getElementById("speed").value;
     }
-    document.getElementById('ta-log').innerHTML = text; //current read
 }
 
 function getspeed(){
@@ -252,128 +189,6 @@ function getspeed(){
     }*/
 }
 
-function douploadbook(){
-
-    //Lấy ra files
-    var file_data = $('#filebook').prop('files')[0];
-    if(file_data == undefined){
-        $('#uploadstatus').text('Chọn file sách để upload');
-        return;
-    }
-    //lấy ra kiểu file
-    var type = file_data.type;
-    //Xét kiểu file được upload
-    var match = ["application/pdf", "application/epub+zip "];
-    //kiểm tra kiểu file
-    if (type == match[0] || type == match[1] || type == match[2]) {
-        //khởi tạo đối tượng form data
-        var form_data = new FormData();
-        //thêm files vào trong form data
-        form_data.append('file', file_data);
-        //sử dụng ajax post
-        $.ajax({
-            url: 'uploadbook.php', // gửi đến file upload.php 
-            dataType: 'text',
-            xhr: function () {
-                var myXhr = $.ajaxSettings.xhr();
-                if (myXhr.upload) {
-                    myXhr.upload.addEventListener('progress', uploadprogress, false);
-                }
-                return myXhr;
-            },
-            cache: false,
-            contentType: false,
-            processData: false,
-            data: form_data,
-            type: 'post',
-            success: function (response) {
-                var res = JSON.parse(response);
-                if(res.status == true){
-                    $('#uploadstatus').text('Sách ' + res.bookname + ' có: ' + res.pages + ' trang');
-
-                    sessionStorage.setItem('book',res.bookname);
-                    sessionStorage.setItem('tmp',res.booktmp);
-                    sessionStorage.setItem('pages',res.pages);
-
-                    $('#filebook').val('');
-                }else{
-                    $('#uploadstatus').text(res.message);
-                }
-            }
-        });
-    } else {
-        $('#uploadstatus').text('Chỉ được upload pdf hay epub');
-        $('#filebook').val('');
-    }
-    return false;
-
-}
-
-function uploadprogress(e) {
-
-    if (e.lengthComputable) {
-        var max = e.total;
-        var current = e.loaded;
-
-        var Percentage = (current * 100) / max;
-        //console.log(Math.round(Percentage) + '%');
-        $('#uploadstatus').text('Uploading...'+ Math.round(Percentage) + '%');
-
-        if (Percentage >= 100) {
-            // upload process completed  
-        }
-    }
-}
-
-function gettextfrompage() {
-    var currentpage = document.getElementById('currentpage').value;
-
-    document.getElementById('btngettext').value = 'Loading...';
-
-    $.ajax({
-
-        type: 'GET',
-        url: 'gettext.php?book=' + sessionStorage.getItem('tmp') + '&page=' + currentpage,
-        data: {
-        },
-        success: function (data) {
-
-            document.getElementById('btngettext').value = 'Get Text';
-
-            $('#ta').html(data);
-
-        },
-        error: function () {
-            console.log('Cannot xhr request');
-            alert('Cannot get URL, press Retry Again');
-            document.getElementById('btngettext').value = 'Retry Again';
-        },
-        statusCode: {
-            429: function () {
-                alert('Rate limit exceeded: you are doing action too fast');
-                console.log('429 Rate limit exceeded');
-            },
-            500: function () {
-                alert('Server Error, please try again later')
-                console.log('500 Internal server error');
-                document.getElementById('btngettext').value = 'Retry Again';
-            },
-            401: function () {
-                console.log('401 Unauthorized');
-            }
-        }
-
-    });
-
-}
-
-function getnextpage() {
-    var currentpage = parseInt(document.getElementById('currentpage').value);
-    if(currentpage != sessionStorage.getItem('pages')){ //if current page is not reach last page
-        document.getElementById('currentpage').value = currentpage + 1;
-        gettextfrompage();
-    }
-}
 
 function getcontent() {
 	var url = document.getElementById('url').value;
@@ -432,15 +247,6 @@ function getcontent() {
 
 }
 
-function splitcontent(text){
-    return text.split('.');
-}
-
-//ECMA2017 Promise and Await Sleep
-//await sleep(2000);
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 /*
 Split string to part of 200 character,
@@ -537,29 +343,6 @@ function striptags(html, exclude=''){
 
 	return result;
 
-}
-
-function setCookie(name, value, days) {
-    var expires = "";
-    if (days) {
-        var date = new Date();
-        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-        expires = "; expires=" + date.toUTCString();
-    }
-    document.cookie = name + "=" + (value || "") + expires + "; path=/";
-}
-function getCookie(name) {
-    var nameEQ = name + "=";
-    var ca = document.cookie.split(';');
-    for (var i = 0; i < ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-    }
-    return null;
-}
-function eraseCookie(name) {
-    document.cookie = name + '=; Max-Age=-99999999;';
 }
 
 </script>

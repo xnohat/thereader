@@ -1,0 +1,19 @@
+equirements
+Behind the scenes this package leverages pdftotext. You can verify if the binary installed on your system by issueing this command:
+
+which pdftotext
+
+If it is installed it will return the path to the binary.
+
+To install the binary you can use this command on Ubuntu or Debian:
+
+apt-get install poppler-utils
+
+If you're on RedHat or CentOS use this:
+
+yum install poppler-utils
+
+yum install sox
+
+apt-get install sox
+
