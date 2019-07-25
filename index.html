@@ -170,10 +170,6 @@ function googletts(){
 	var new_element = old_element.cloneNode(true);
 	old_element.parentNode.replaceChild(new_element, old_element);
 
-    current_play = 0;
-    var text = '';
-    var arr_text = new Array();
-
     //Get Text
     text = $('#ta').val(); // Global variable - text
     
@@ -182,65 +178,56 @@ function googletts(){
     	return false;
     }
 
-    if(text.length <= 200){
-
-        read(text);
-        $('#reader').show();
-
-    }else{
-
-        arr_text = splitcontent(text);
-        console.log(arr_text);
-
-        read(arr_text[current_play]); // play 1st string
-        console.log('reading: ' + arr_text[current_play]);
-        $('#reader').show();
-        
-        document.getElementById('reader').addEventListener('ended', function(){
-            readnext(arr_text);
-        });
-
-    }
-
+    var currentpage = document.getElementById('currentpage').value;
+    read(currentpage); // read page
+    console.log('reading page: ' + currentpage);
+    $('#reader').show();
     
+    document.getElementById('reader').addEventListener('ended', readnext); //when end current playing read please read next
 
 }//end function
 
+function read(page) {
+    googlettsurl = 'tts.php?safari=' + isSafari + '&lang=' + document.getElementById("lang").value + '&speed=' + document.getElementById("speed").value + '&book=' + sessionStorage.getItem('tmp') + '&page=' + page;
 
-function readnext(arr_text) {
-    current_play++;
-    if(current_play < arr_text.length){
-        read(arr_text[current_play]);
-        console.log('reading: ' + arr_text[current_play]);
-    }else{
-        // Finish reading current page !
-        current_play = 0; // reset cursor
+    $('#reader').attr('src', googlettsurl).get(0).play();
+
+    if (isSafari == false) { // Not Safari
+        document.getElementById('reader').playbackRate = document.getElementById("speed").value;
+        document.getElementById('reader').defaultPlaybackRate = document.getElementById("speed").value;
+    }
+    //document.getElementById('ta-log').innerHTML = text; //current read
+}
+
+function readnext() {
+
         var originalhashcontent = document.getElementById('ta').value.hashCode();
         getnextpage(); // get next page content
-        
+    
         //loop every second to check new page content loaded ?
         var intervalCheckHash = setInterval(() => {
             console.log('originhash: '+originalhashcontent+' - currhash: '+ document.getElementById('ta').value.hashCode());
             if(originalhashcontent != document.getElementById('ta').value.hashCode()){ //new content loaded 
-                googletts(); //read it !
+                read(document.getElementById('currentpage').value); //read next page
                 clearInterval(intervalCheckHash); //clear interval
                 intervalCheckHash = 0; //destroy variable
             }
         }, 100);
 
+        if(document.getElementById('currentpage').value == sessionStorage.getItem('pages')){
+            document.getElementById('reader').removeEventListener('ended', readnext); //remove event end of reader audio tag because its last page of book
+            return;
+        }
+
         //setTimeout(function () {  googletts(); }, 3000);
-        
-    }
 }
 
-function read(text){
-    googlettsurl = 'tts.php?safari='+ isSafari +'&lang='+ document.getElementById("lang").value + '&speed=' + document.getElementById("speed").value + '&q='+ encodeURIComponent(text.trim());
-    $('#reader').attr('src',googlettsurl).get(0).play();
-    if (isSafari == false) { // Not Safari
-        document.getElementById('reader').playbackRate = document.getElementById("speed").value;
-        document.getElementById('reader').defaultPlaybackRate = document.getElementById("speed").value;
+function getnextpage() {
+    var currentpage = parseInt(document.getElementById('currentpage').value);
+    if (currentpage != sessionStorage.getItem('pages')) { //if current page is not reach last page
+        document.getElementById('currentpage').value = currentpage + 1;
+        gettextfrompage();
     }
-    document.getElementById('ta-log').innerHTML = text; //current read
 }
 
 function getspeed(){
@@ -367,176 +354,10 @@ function gettextfrompage() {
 
 }
 
-function getnextpage() {
-    var currentpage = parseInt(document.getElementById('currentpage').value);
-    if(currentpage != sessionStorage.getItem('pages')){ //if current page is not reach last page
-        document.getElementById('currentpage').value = currentpage + 1;
-        gettextfrompage();
-    }
-}
-
-function getcontent() {
-	var url = document.getElementById('url').value;
-
-	document.getElementById('btnurl').value = 'Loading...';
-
-	$.ajax({
-		
-		type: 'GET',
-		url: 'parser.php?u='+encodeURIComponent(url),
-		data: {
-		},
-		success: function(data) {
-			
-			document.getElementById('btnurl').value = 'Get Content';
-
-			try {
-			    var objData = JSON.parse(data);
-			    //Success Request
-			    if(typeof objData.error != 'undefined'){
-			    	console.log('Article Parser Error: ' + data);
-			    	return false;
-			    }
-
-			    $('#ta').html(striptags(objData.title + "\n" + objData.content));
-
-			    console.log("Got article content. Reading...");
-
-			}
-			catch(err) {
-			    //nothing
-			}
-		    
-		},
-		error: function() {
-		    console.log('Cannot xhr request');
-		    alert('Cannot get URL, press Retry Again');
-		    document.getElementById('btnurl').value = 'Retry Again';
-		},
-		statusCode: {
-		    429: function() {
-		      alert('Rate limit exceeded: you are doing action too fast');
-		      console.log('429 Rate limit exceeded');
-		    },
-		    500: function() {
-		      alert('Server Error, please try again later')
-		      console.log('500 Internal server error');
-		      document.getElementById('btnurl').value = 'Retry Again';
-		    },                
-		    401: function() {
-		      console.log('401 Unauthorized');
-		    }
-		  }
-
-	});
-
-}
-
-function splitcontent(text){
-    return text.split('.');
-}
-
 //ECMA2017 Promise and Await Sleep
 //await sleep(2000);
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-/*
-Split string to part of 200 character,
-and especially not cut string at middle of word
-Return array of string part
-*/
-function stringsplitter(text){
-
-    // i will be cusor
-    var arr_text_part = new Array();
-    var x = 0; //counter for arr_text_part
-    var tempstr = '';
-
-    var i=0;
-    while(i < text.length) {
-
-       tempstr += text[i];
-       if((i >= 200) && ((i%200) === 0)){
-
-        //Trim text part to avoid middle of word break or break in middle of phrase - this so excited and intelligent
-
-        if(tempstr.indexOf("\n") != -1){ // text part have newline in string
-            //cut last character until last character is newline
-            while(text[i] != "\n"){
-               tempstr = tempstr.slice(0, -1);
-               i--;
-            }
-        
-        }else if(tempstr.indexOf('.') != -1){ // text part have . (dot) in string
-            //cut last character until last character is dot
-            while(text[i] != '.'){
-               tempstr = tempstr.slice(0, -1);
-               i--;
-            }
-        
-        }else if(tempstr.indexOf(',') != -1){
-            //cut last character until last character is comma
-            while(text[i] != ','){
-               tempstr = tempstr.slice(0, -1);
-               i--;
-            }
-        }else{
-            //cut last character until last character is space
-            while(text[i] != ' '){
-               tempstr = tempstr.slice(0, -1);
-               i--;
-            }
-        }
-
-        text = text.substring(i, text.length); //remove assigned part from string
-        i = 0; //reset cursor to 0
-
-        //console.log(tempstr);
-        arr_text_part[x] = tempstr.trim(); //save this part (remove space before and after)
-        tempstr = ''; //clear tempstr
-        x++; //increase arr_text_part counter
-
-       }
-    
-    i++
-    }//end while
-    arr_text_part[x] = text.trim(); // last part remain of text
-    
-    //console.log(arr_text_part);
-
-    return arr_text_part;
-
-}
-
-function striptags(html, exclude=''){
-	
-	var tags_exclude_regEx=exclude; // exclude tag in RegEx pattern use | for OR in RegEx
-
-	var regex_final=/<(?!\s*\/?(a|b|c)\b)[^>]+>/ig;
-	
-	var regex =new RegExp("<(?!\\s*\\/?("+tags_exclude_regEx+")\\b)[^>]+>","gi");
-	
-	console.log(regex);
-	console.log(regex_final);
-	//var regex =(\<)(?!br(\s|\/|\>))(.*?\>);
-	//var body = $('#test').html();
-	//var regex = /(?!a|br|/a)[^>]+;
-	
-	var body = html; //Content need strip tags
-
-	if(tags_exclude_regEx.length==0)
-	{
-		regex=/(<([^>]+)>)/ig;
-	}
-	//regex=/(<([^>]+)>)/ig;
-
-	//Doing Strip Tag by RegEx replace
-	var result = body.replace(regex, "");
-
-	return result;
-
 }
 
 function setCookie(name, value, days) {
