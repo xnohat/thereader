@@ -1,4 +1,4 @@
-# xnohat-tts
-XNOHAT TTS based on Google TTS Unofficial API
+# The Reader
+Author: XNOHAT 
 
-This app need *ffmpeg* for transform audio file, so remember download latest stable version of ffmpeg and place in same folder with tts.php
+Ebook PDF and Epub voice reader by using TTS based on Google TTS Unofficial API
