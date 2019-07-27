@@ -11,18 +11,18 @@ class Reader{
     public static function getPdfPage($file){
         //REQUIRED BINARY: yum install poppler-utils or apt-get install poppler-utils
         //pdfinfo document.pdf | grep Pages: | awk '{print $2}'
-        return intval(trim(shell_exec("pdfinfo $file | grep Pages: | awk '{print $2}'")));
+        return intval(trim(shell_exec("./pdfinfo $file | grep Pages: | awk '{print $2}'")));
     }
 
     public static function pdftoText($file, $page){
         //REQUIRED BINARY: yum install poppler-utils or apt-get install poppler-utils
         //pdftotext -q -raw -nopgbrk -f 10 -l 10 document3.pdf -
-        return shell_exec("pdftotext -q -raw -nopgbrk -f $page -l $page $file -");
+        return shell_exec("./pdftotext -q -raw -nopgbrk -f $page -l $page $file -");
     }
 
     public static function getEpubPage($file){
         $charperpage = 2000;
-        $charcount = intval(trim(shell_exec("epub2txt -r $file | wc -m $file")));
+        $charcount = intval(trim(shell_exec("./epub2txt -r $file | wc -m $file")));
         $totalpage = intval(round($charcount / $charperpage));
         return $totalpage;
     }
@@ -40,7 +40,7 @@ class Reader{
         }
         $endpos = $charperpage + $safetycutcharmargin;
 
-        $textfull = shell_exec("epub2txt -r $file");
+        $textfull = shell_exec("./epub2txt -r $file");
 
         $textofpage = mb_substr($textfull, $startpos, $endpos);
         $firstBlankPos = mb_strpos($textofpage, " ");
