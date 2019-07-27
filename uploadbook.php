@@ -15,6 +15,19 @@ if (isset($_POST) && !empty($_FILES['file'])) {
         if (move_uploaded_file($_FILES['file']['tmp_name'],sys_get_temp_dir().'/'.$booktmp)) {
             $filefullpath = sys_get_temp_dir().'/' . $booktmp;
             $filename = $_FILES['file']['name'];
+            switch ($extension) {
+                case 'epub':
+                    $totalpage = Reader::getEpubPage(sys_get_temp_dir() . '/' . $booktmp);
+                    break;
+
+                case 'pdf':
+                    $totalpage = Reader::getPdfPage(sys_get_temp_dir() . '/' . $booktmp);
+                    break;
+
+                default:
+                    die('WRONG EXTENSION');
+                    break;
+            }
 
             //success
             $response = [
@@ -22,7 +35,7 @@ if (isset($_POST) && !empty($_FILES['file'])) {
                 'message' => 'success',
                 'bookname' => $_FILES['file']['name'],
                 'booktmp' => $booktmp,
-                'pages' => Reader::getPdfPage($filefullpath),
+                'pages' => $totalpage,
             ];
             die(json_encode($response));
         } else { // fail

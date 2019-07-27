@@ -188,7 +188,7 @@ function googletts(){
 }//end function
 
 function read(page) {
-    googlettsurl = 'tts.php?safari=' + isSafari + '&lang=' + document.getElementById("lang").value + '&speed=' + document.getElementById("speed").value + '&book=' + sessionStorage.getItem('tmp') + '&page=' + page;
+    googlettsurl = 'tts.php?safari=' + isSafari + '&lang=' + document.getElementById("lang").value + '&speed=' + document.getElementById("speed").value + '&book=' + sessionStorage.getItem('tmp') + '&page=' + page + '&pages=' + sessionStorage.getItem('pages');
 
     $('#reader').attr('src', googlettsurl).get(0).play();
 
@@ -250,7 +250,7 @@ function douploadbook(){
     //lấy ra kiểu file
     var type = file_data.type;
     //Xét kiểu file được upload
-    var match = ["application/pdf", "application/epub+zip "];
+    var match = ["application/pdf", "application/epub+zip"];
     //kiểm tra kiểu file
     if (type == match[0] || type == match[1] || type == match[2]) {
         //khởi tạo đối tượng form data
@@ -320,7 +320,7 @@ function gettextfrompage() {
     $.ajax({
 
         type: 'GET',
-        url: 'gettext.php?book=' + sessionStorage.getItem('tmp') + '&page=' + currentpage,
+        url: 'gettext.php?book=' + sessionStorage.getItem('tmp') + '&page=' + currentpage + '&pages=' + sessionStorage.getItem('pages'),
         data: {
         },
         success: function (data) {

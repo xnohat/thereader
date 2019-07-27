@@ -14,10 +14,42 @@ class Reader{
         return intval(trim(shell_exec("pdfinfo $file | grep Pages: | awk '{print $2}'")));
     }
 
-    public static function pdftoText($file,$firstpage=0,$lastpage=100){
+    public static function pdftoText($file, $page){
         //REQUIRED BINARY: yum install poppler-utils or apt-get install poppler-utils
         //pdftotext -q -raw -nopgbrk -f 10 -l 10 document3.pdf -
-        return shell_exec("pdftotext -q -raw -nopgbrk -f $firstpage -l $lastpage $file -");
+        return shell_exec("pdftotext -q -raw -nopgbrk -f $page -l $page $file -");
+    }
+
+    public static function getEpubPage($file){
+        $charperpage = 2000;
+        $charcount = intval(trim(shell_exec("epub2txt -r $file | wc -m $file")));
+        $totalpage = intval(round($charcount / $charperpage));
+        return $totalpage;
+    }
+
+    public static function epubtoText($file, $page){
+        //Require binary: https://github.com/kevinboone/epub2txt2
+        //epub2txt -r document.epub
+        $charperpage = 2000;
+        $safetycutcharmargin = 6; //this margin for keep last word of page will continue with first word of next page and prevent lost word, this should be longest char of word in language (example VN is 5, english is 6-7)
+
+        if($page == 1){
+            $startpos = 0;
+        }else{
+            $startpos = ($page - 1)*$charperpage;
+        }
+        $endpos = $charperpage + $safetycutcharmargin;
+
+        $textfull = shell_exec("epub2txt -r $file");
+
+        $textofpage = mb_substr($textfull, $startpos, $endpos);
+        $firstBlankPos = mb_strpos($textofpage, " ");
+        $lastBlankPos = mb_strrpos($textofpage," ");
+        $textofpage = mb_substr($textofpage, $firstBlankPos, $lastBlankPos-$firstBlankPos); //safety cut to not break word position
+
+        return $textofpage;
+
+
     }
 
     public static function texttoSentence200char($text){

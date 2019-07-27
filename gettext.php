@@ -3,11 +3,26 @@ include('vendor/autoload.php');
 require('Reader.php');
 use TheReader\Reader;
 
-$pdffile = sys_get_temp_dir().'/'.$_GET['book'];
+$bookfile = sys_get_temp_dir().'/'.$_GET['book'];
 $page = $_GET['page'];
+$totalpage = $_GET['pages']; //totalpages
 
-$totalpage = Reader::getPdfPage($pdffile);
-$text = Reader::pdftoText($pdffile,$page,$page);
+$extension = explode('.', $_GET['book']);
+$extension = $extension[(count($extension) - 1)];
+
+switch ($extension) {
+    case 'epub':
+        $text = Reader::epubtoText($bookfile, $page);
+        break;
+
+    case 'pdf':
+        $text = Reader::pdftoText($bookfile, $page);
+        break;
+
+    default:
+        die('WRONG EXTENSION');
+        break;
+}
 
 //echo $text;
 
