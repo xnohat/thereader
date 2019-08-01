@@ -87,7 +87,7 @@ if ($_GET['safari'] == 'true') { //isSafari
 }
 
 
-header('Content-Description: File Transfer');
+/* header('Content-Description: File Transfer');
 header('Content-Type: application/octet-stream');
 header('Content-Disposition: attachment; filename='.basename($fileconverted));
 header('Content-Transfer-Encoding: binary');
@@ -97,10 +97,10 @@ header('Pragma: public');
 header('Content-Length: ' . filesize($fileconverted));
 ob_clean();
 flush();
-readfile($fileconverted);
+readfile($fileconverted); */
 
 
-//smartReadFile($fileconverted, basename($fileconverted), 'audio/mpeg');
+smartReadFile($fileconverted, basename($fileconverted), 'audio/mpeg');
 
 @unlink($fileconverted);
 @unlink($filefinal);
