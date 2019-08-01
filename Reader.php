@@ -21,7 +21,7 @@ class Reader{
     }
 
     public static function getEpubPage($file){
-        $charperpage = 2000;
+        $charperpage = 3000;
         $charcount = intval(trim(shell_exec("./epub2txt -r $file | wc -m $file")));
         $totalpage = intval(round($charcount / $charperpage));
         return $totalpage;
@@ -30,7 +30,7 @@ class Reader{
     public static function epubtoText($file, $page){
         //Require binary: https://github.com/kevinboone/epub2txt2
         //epub2txt -r document.epub
-        $charperpage = 2000;
+        $charperpage = 3000;
         $safetycutcharmargin = 10; //this margin for keep last word of page will continue with first word of next page and prevent lost word, this should be longest char of word in language (example VN is 5, english is 6-7)
 
         if($page == 1){
