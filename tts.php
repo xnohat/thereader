@@ -197,7 +197,7 @@ function smartReadFile($location, $filename, $mimeType = 'application/octet-stre
   }
 }
 
-function filter_filename($filename, $beautify = true)
+function filter_filename($filename, $beautify = false)
 {
   // sanitize filename
   $filename = preg_replace(
