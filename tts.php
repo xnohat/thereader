@@ -86,6 +86,7 @@ $fileconverted = 'audio/' . $uuid . '_converted.mp3';
 //transform speed
 if ($_GET['safari'] == 'true') { //isSafari
     exec('./ffmpeg -y -loglevel quiet -i ' . $filefinal . ' -filter:a "atempo=' . $_GET['speed'] . '" ' . $fileconverted);
+    @unlink($filefinal); //clear file final for save space
 } else {
   $fileconverted = $filefinal;
 }

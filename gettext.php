@@ -3,7 +3,7 @@ include('vendor/autoload.php');
 require('Reader.php');
 use TheReader\Reader;
 
-$bookfile = sys_get_temp_dir().'/'.$_GET['book'];
+$bookfile = 'book/'.$_GET['book'];
 $page = $_GET['page'];
 $totalpage = $_GET['pages']; //totalpages
 
