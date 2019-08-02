@@ -24,8 +24,8 @@ if (isset($_POST) && !empty($_FILES['file'])) {
     if ($extension === 'pdf' || $extension === 'epub') {
 
         $booktmp = "book_".$_COOKIE['uuid'].'.'.$extension; //temp name for uploaded file persistent save in /tmp
-        if (move_uploaded_file($_FILES['file']['tmp_name'],sys_get_temp_dir().'/'.$booktmp)) {
-            $filefullpath = sys_get_temp_dir().'/' . $booktmp;
+        if (move_uploaded_file($_FILES['file']['tmp_name'],'book/'.$booktmp)) {
+            $filefullpath = 'book/' . $booktmp;
             $filename = $_FILES['file']['name'];
             switch ($extension) {
                 case 'epub':

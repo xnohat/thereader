@@ -16,3 +16,8 @@ chmod +x ./ffmpeg
 chmod +x ./pdfinfo
 
 chmod +x ./pdftotext
+
+and allow write to folder audio and book
+
+chmod 777 ./audio
+chmod 777 ./book

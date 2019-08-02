@@ -4,11 +4,15 @@ set_time_limit(180);
 include('vendor/autoload.php');
 require('Reader.php');
 
+//Run Cleaner to get Disk space
+cleaner('audio');
+cleaner('book');
+
 use TheReader\Reader;
 
 $uuid = $_COOKIE['uuid'];
 $lang = $_GET['lang'];
-$bookfile = sys_get_temp_dir() . '/' . filter_filename($_GET['book']);
+$bookfile = 'book/' . filter_filename($_GET['book']);
 $page = $_GET['page'];
 $totalpage = $_GET['pages']; //totalpages
 
@@ -40,7 +44,7 @@ foreach ($sentences as $sentence) {
 
     $url = 'http://translate.google.com/translate_tts?ie=UTF-8&q=' . urlencode($sentence) . '&tl=' . $lang . '&total=1&idx=0&textlen=1000&client=tw-ob'; //&ttsspeed=1';
 
-    $filetts = sys_get_temp_dir() . '/' . $uuid . '_' . $id . '.mp3';
+    $filetts = 'audio/' . $uuid . '_' . $id . '.mp3';
 
     $response = curl_get($url);
 
@@ -53,11 +57,11 @@ foreach ($sentences as $sentence) {
 }
 
 //Merge TTS Files to one File
-$filefinal = sys_get_temp_dir() . '/' . $uuid . '.mp3';
+$filefinal = 'audio/' . $uuid . '.mp3';
 
 $ffmpeg_merge_command = './ffmpeg -y -i "concat:';
 for ($id = 1; $id <= sizeof($sentences); $id++) {
-  $ffmpeg_merge_command .= sys_get_temp_dir() . '/' . $uuid . '_' . $id . '.mp3';
+  $ffmpeg_merge_command .= 'audio/' . $uuid . '_' . $id . '.mp3';
   if ($id != sizeof($sentences)) {
     $ffmpeg_merge_command .= '|silence.mp3|'; //add silence file between tts files
     //$ffmpeg_merge_command .= '|'; //add silence file between tts files
@@ -72,12 +76,12 @@ exec($ffmpeg_merge_command);
 
 //delete all file parts
 for ($id = 1; $id <= sizeof($sentences); $id++) {
-  $filetts = sys_get_temp_dir() . '/' . $uuid . '_' . $id . '.mp3';
+  $filetts = 'audio/' . $uuid . '_' . $id . '.mp3';
   @unlink($filetts);
 }
 
 //---Convert tempo if safari---
-$fileconverted = sys_get_temp_dir() . '/' . $uuid . '_converted.mp3';
+$fileconverted = 'audio/' . $uuid . '_converted.mp3';
 
 //transform speed
 if ($_GET['safari'] == 'true') { //isSafari
@@ -100,10 +104,13 @@ flush();
 readfile($fileconverted); */
 
 
-smartReadFile($fileconverted, basename($fileconverted), 'audio/mpeg');
+//smartReadFile($fileconverted, basename($fileconverted), 'audio/mpeg');
 
-@unlink($fileconverted);
-@unlink($filefinal);
+//@unlink($fileconverted);
+//@unlink($filefinal);
+
+//Redirect directly to outputed audio file
+header('Location: '.$fileconverted);
 
 exit;
 
@@ -243,6 +250,20 @@ function beautify_filename($filename)
   // ".file-name.-" becomes "file-name"
   $filename = trim($filename, '.-');
   return $filename;
+}
+
+function cleaner($folderpath){ //DONT HAVE Slash / at END
+
+  $fileSystemIterator = new FilesystemIterator($folderpath);
+  $now = time();
+  foreach ($fileSystemIterator as $file) {
+    if ($now - $file->getCTime() >= 60 * 60 * 24 * 1){ // 1 days 
+      if($file->getFilename() != '.gitkeep'){ // 1 days 
+        unlink($folderpath.'/' . $file->getFilename());
+      }
+    }
+  }
+
 }
 
 ?>
