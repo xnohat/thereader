@@ -12,7 +12,8 @@
     <meta property="og:image" content="http://www.techsignin.com/wp-content/uploads/2017/01/google-translate-logo.png" />
     <meta property="og:site_name" content="TheReader - Book Text to Speech by Google" />
     <meta property="og:description" content="Đọc bất kỳ file pdf hay epub nào, một cách trơn tru bằng công nghệ Text to Speech của Google, api hacked by xnohat" />
-
+    <link rel="icon" href="data:,">
+    
     <style type="text/css">
         /* Desktop screen */
         @media all and (min-width: 901px) {
@@ -82,7 +83,7 @@
             <p>
                 <form id="form" action="uploadbook.php" method="post" enctype="multipart/form-data">
                     <label for="filebook">Upload Book (PDF,EPUB)</label>
-                    <i>max file size <?php echo isa_convert_bytes_to_specified(file_upload_max_size(),'M'); ?> MB</i>
+                    <i>max file size <?php echo isa_convert_bytes_to_specified(file_upload_max_size(), 'M'); ?> MB</i>
                     <input id="filebook" type="file" accept=".pdf,.epub" name="book" />
                     <input class="btn btn-success" type="button" value="Upload" onclick="douploadbook()" />
                 </form>

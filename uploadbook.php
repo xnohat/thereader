@@ -29,11 +29,11 @@ if (isset($_POST) && !empty($_FILES['file'])) {
             $filename = $_FILES['file']['name'];
             switch ($extension) {
                 case 'epub':
-                    $totalpage = Reader::getEpubPage(sys_get_temp_dir() . '/' . $booktmp);
+                    $totalpage = Reader::getEpubPage('book/' . $booktmp);
                     break;
 
                 case 'pdf':
-                    $totalpage = Reader::getPdfPage(sys_get_temp_dir() . '/' . $booktmp);
+                    $totalpage = Reader::getPdfPage('book/' . $booktmp);
                     break;
 
                 default:
