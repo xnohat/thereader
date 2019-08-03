@@ -24,11 +24,11 @@
             }
 
             #ta {
-                width: 100%;
+                width: 95%;
             }
 
             #btnread {
-                width: 100%;
+                width: 95%;
             }
 
             #url {
@@ -45,11 +45,11 @@
             }
 
             #ta {
-                width: 100%;
+                width: 95%;
             }
 
             #btnread {
-                width: 100%;
+                width: 95%;
             }
 
             #url {
@@ -60,11 +60,11 @@
         /* mobile screen */
         @media all and (max-width: 766px) {
             #ta {
-                width: 100%;
+                width: 95%;
             }
 
             #btnread {
-                width: 100%;
+                width: 95%;
             }
 
             #url {
@@ -94,7 +94,7 @@
                 <input id="currentpage" type="text" size=3 />
                 <input id="btngettext" type="button" value="Get Text" onclick="gettextfrompage()" />
             </p>
-            <textarea id="ta" rows="20" spellcheck="false" placeholder="Chọn file PDF, Epub để upload (Windows,Mac,iOS,Android đều được hỗ trợ), nhập trang cần đọc và bấm nút Get Text để load nội dung text của trang, chọn ngôn ngữ của sách, rồi chọn tốc độ đọc, rồi bấm Read. Đọc hết trang sẽ tự động chuyển trang. Please choose PDF, Epub file to upload (Windows,Mac,iOS,Android supported), set Page want to read, click Get Text to load text from page, choose Language of book, select reading speed, Click Read to start, next page will automatic load after current page completed"></textarea>
+            <textarea id="ta" rows="14" spellcheck="false" placeholder="Chọn file PDF, Epub để upload (Windows,Mac,iOS,Android đều được hỗ trợ), nhập trang cần đọc và bấm nút Get Text để load nội dung text của trang, chọn ngôn ngữ của sách, rồi chọn tốc độ đọc, rồi bấm Read. Đọc hết trang sẽ tự động chuyển trang. Please choose PDF, Epub file to upload (Windows,Mac,iOS,Android supported), set Page want to read, click Get Text to load text from page, choose Language of book, select reading speed, Click Read to start, next page will automatic load after current page completed"></textarea>
             <p id="ta-log"></p>
             <p id="msg-disablescreenlock" hidden><i>Please Turn of Auto Screen Lock of your mobile device</i></p>
             <p>
