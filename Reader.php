@@ -17,7 +17,7 @@ class Reader{
     public static function pdftoText($file, $page){
         //REQUIRED BINARY: yum install poppler-utils or apt-get install poppler-utils
         //pdftotext -q -raw -nopgbrk -f 10 -l 10 document3.pdf -
-        return shell_exec("./pdftotext -q -raw -nopgbrk -f $page -l $page $file -");
+        return shell_exec("./pdftotext -q -nopgbrk -f $page -l $page $file -");
     }
 
     public static function getEpubPage($file){
