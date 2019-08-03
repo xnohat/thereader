@@ -111,7 +111,7 @@ readfile($fileconverted); */
 //@unlink($filefinal);
 
 //Redirect directly to outputed audio file
-header('Location: '.$fileconverted);
+header('Location: '.$fileconverted.'?random='.chr(mt_rand(97, 122)).substr(md5(time()), 1));
 
 exit;
 
