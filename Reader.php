@@ -29,7 +29,7 @@ class Reader{
 
     public static function getEpubPage($file){
         //mutool draw -s -q -F text -o /dev/null book/book_a29dd235146e773d3594b98be5f4bfb4.epub 2>&1 | tail -n -1 | awk '{print $3}'
-        return intval(trim(shell_exec("./mutool draw -s -q -F text -o /dev/null $file 2>&1 | tail -n -1 | awk '{print $3}'")));
+        return intval(trim(shell_exec("./mutool draw -s -q -W 530 -H 530 -F text -o /dev/null $file 2>&1 | tail -n -1 | awk '{print $3}'")));
     }
 
     public static function epub2txt($file, $page){
@@ -57,7 +57,7 @@ class Reader{
 
     public static function epubtoText($file, $page){
         //mutool draw -q -W 550 -H 550 -F text book/book_a29dd235146e773d3594b98be5f4bfb4.epub 10
-        $text = shell_exec("./mutool draw -q -W 550 -H 550 -F text $file $page");
+        $text = shell_exec("./mutool draw -q -W 530 -H 530 -F text $file $page");
         $text = preg_replace('/[\x00-\x1F\x7F]/u', ' ', $text); //replace non-printable characters by space
         return $text;
     }
