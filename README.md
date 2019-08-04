@@ -7,7 +7,7 @@ install required library
 
 yum install poppler-utils or apt-get install poppler-utils
 
-please doing chmod +x for 4 binary in source folder
+please doing chmod +x for 5 binary in source folder
 
 chmod +x ./epub2txt
 
@@ -16,6 +16,8 @@ chmod +x ./ffmpeg
 chmod +x ./pdfinfo
 
 chmod +x ./pdftotext
+
+chmod +x ./mutool
 
 and allow write to folder audio and book
 
