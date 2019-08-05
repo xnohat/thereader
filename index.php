@@ -13,7 +13,7 @@
     <meta property="og:site_name" content="TheReader - Book Text to Speech by Google" />
     <meta property="og:description" content="Đọc bất kỳ file pdf hay epub nào, một cách trơn tru bằng công nghệ Text to Speech của Google, api hacked by xnohat" />
     <link rel="icon" href="data:,">
-    
+
     <style type="text/css">
         /* Desktop screen */
         @media all and (min-width: 901px) {
@@ -94,7 +94,7 @@
                 <input id="currentpage" type="text" size=3 />
                 <input id="btngettext" type="button" value="Get Text" onclick="gettextfrompage()" />
             </p>
-            <textarea id="ta" rows="14" spellcheck="false" placeholder="Chọn file PDF, Epub để upload (Windows,Mac,iOS,Android đều được hỗ trợ), nhập trang cần đọc và bấm nút Get Text để load nội dung text của trang, chọn ngôn ngữ của sách, rồi chọn tốc độ đọc, rồi bấm Read. Đọc hết trang sẽ tự động chuyển trang. Please choose PDF, Epub file to upload (Windows,Mac,iOS,Android supported), set Page want to read, click Get Text to load text from page, choose Language of book, select reading speed, Click Read to start, next page will automatic load after current page completed"></textarea>
+            <textarea readonly id="ta" rows="14" spellcheck="false" placeholder="Chọn file PDF, Epub để upload (Windows,Mac,iOS,Android đều được hỗ trợ), nhập trang cần đọc và bấm nút Get Text để load nội dung text của trang, chọn ngôn ngữ của sách, rồi chọn tốc độ đọc, rồi bấm Read. Đọc hết trang sẽ tự động chuyển trang. Please choose PDF, Epub file to upload (Windows,Mac,iOS,Android supported), set Page want to read, click Get Text to load text from page, choose Language of book, select reading speed, Click Read to start, next page will automatic load after current page completed"></textarea>
             <p id="ta-log"></p>
             <p id="msg-disablescreenlock" hidden><i>Please Turn of Auto Screen Lock of your mobile device</i></p>
             <p>
