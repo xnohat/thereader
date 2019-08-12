@@ -200,10 +200,15 @@
             //Get Text
             text = $('#ta').val(); // Global variable - text
 
-            if (text == '') {
-                alert('Please enter text before press Read');
+            if (document.getElementById('ta').value.hashCode() == 0) { //empty page ? go next page
+                readnext();
                 return false;
             }
+
+            /* if (text == '') {
+                alert('Please enter text before press Read');
+                return false;
+            } */
 
             var currentpage = document.getElementById('currentpage').value;
             read(currentpage); // read page
@@ -217,7 +222,28 @@
         function read(page) {
             googlettsurl = 'tts.php?safari=' + isSafari + '&lang=' + document.getElementById("lang").value + '&speed=' + document.getElementById("speed").value + '&book=' + sessionStorage.getItem('tmp') + '&page=' + page + '&pages=' + sessionStorage.getItem('pages');
 
-            $('#reader').attr('src', googlettsurl).get(0).play();
+            //$('#reader').attr('src', googlettsurl).get(0).play();
+            document.getElementById('reader').src = googlettsurl;
+            var promise = document.getElementById('reader').play();
+
+            //This for case empty page, unexpected error happend, it need this piece of code to resume play
+            if (promise !== undefined) {
+                promise.then(_ => {
+                    // Autoplay started!
+                    console.log('playing');
+                    setTimeout(() => {
+                        $('#reader').show();
+                        document.getElementById('reader').play();
+                        document.getElementById('reader').addEventListener('ended', readnext); //when end current playing read please read next
+                    }, 1000);
+                    return;
+                }).catch(error => {
+                    // Autoplay was prevented.
+                    // Show a "Play" button so that user can start playback.
+                    // xnohat decide do nothing :)
+                    console.log('error when play');
+                });
+            }
 
             if (isSafari == false) { // Not Safari
                 document.getElementById('reader').playbackRate = document.getElementById("speed").value;
@@ -231,15 +257,30 @@
             var originalhashcontent = document.getElementById('ta').value.hashCode();
             getnextpage(); // get next page content
 
+            isEmpty = 0;
+            var intervalCheckEmpty = setInterval(() => {
+                if (document.getElementById('ta').value.hashCode() == 0) { //empty page ? go next page
+                    clearInterval(intervalCheckEmpty); //clear interval
+                    isEmpty = 1;
+                    readnext();
+                } else {
+                    clearInterval(intervalCheckEmpty); //clear interval
+                    isEmpty = 0;
+                }
+            }, 500);
+
+            if (isEmpty == 1) return; // if is empty , prevent script below running by return immediately
+
             //loop every second to check new page content loaded ?
             var intervalCheckHash = setInterval(() => {
                 console.log('originhash: ' + originalhashcontent + ' - currhash: ' + document.getElementById('ta').value.hashCode());
                 if (originalhashcontent != document.getElementById('ta').value.hashCode()) { //new content loaded 
+                    console.log('curr page: ' + document.getElementById('currentpage').value);
                     read(document.getElementById('currentpage').value); //read next page
                     clearInterval(intervalCheckHash); //clear interval
                     intervalCheckHash = 0; //destroy variable
                 }
-            }, 100);
+            }, 500);
 
             if (document.getElementById('currentpage').value == sessionStorage.getItem('pages')) {
                 document.getElementById('reader').removeEventListener('ended', readnext); //remove event end of reader audio tag because its last page of book
