@@ -68,13 +68,22 @@ class Reader{
             $text = preg_replace("/\n\s+\n/", "\n\n", $text);
             $text = preg_replace("/[\n]{3,}/", "\n\n", $text);
 
+            //clear number decimal or thousand delimiter
+            /* preg_match_all('#(\d+(.|,))+(\d)+#', $text, $arr_unclear_numbers);
+            foreach ($arr_unclear_numbers[0] as $unclear_number) {
+                if((strpos($unclear_number,'.') != false) or (strpos($unclear_number, ',') != false)){
+                    $cleared_number = str_replace(".", "", $unclear_number); //clear dot
+                    $text = str_replace($unclear_number, $cleared_number, $text);
+                }
+            } */
+
             $sentences = array();
             $a = explode("\n\n", $text);
             foreach ($a as $b) {
                 $b = preg_replace("/http:\/\/(.*?)[\s\)]/", "", $b);
                 $b = preg_replace("/http:\/\/([^\s]*?)$/", "", $b);
                 $b = preg_replace("/\[\s*[0-9]*\s*\]/", "", $b);
-                foreach (array_filter(self::multiexplode(array('.',',',';','?','!'), $b)) as $sent){ //array_filter to remove all empty row
+                foreach (array_filter(self::multiexplode(array('. ',', ',';','?','!'), $b)) as $sent){ //array_filter to remove all empty row . Notes: space after delimiter char is very important, it will skip broken thousand and decimal number
                     
                     if (strlen(trim($sent)) > 3) {
                         $sent = preg_replace("/\n/", " ", $sent);
